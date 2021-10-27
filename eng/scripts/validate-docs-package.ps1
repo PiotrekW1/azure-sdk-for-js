@@ -47,9 +47,12 @@ function GetResult($success, $package, $output) {
 # }
 
 Write-Host "docker run -e TARGET_PACKAGE="$($Package.name)" azuresdkimages.azurecr.io/jsrefautocr:latest"
-$installOutput = docker run -e TARGET_PACKAGE="$($Package.name)" azuresdkimages.azurecr.io/jsrefautocr:latest
-if ($LASTEXITCODE -ne 0) {
+try {
+  $installOutput = docker run -e TARGET_PACKAGE="$($Package.name)" azuresdkimages.azurecr.io/jsrefautocr:latest
+}
+catch {
   LogWarning "Package install failed: $($Package.name)"
+  LogWarning $_.Exception.Message
   return GetResult $false $package $installOutput
 }
 
