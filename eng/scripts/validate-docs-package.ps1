@@ -38,16 +38,16 @@ function GetResult($success, $package, $output) {
   return @{ Success = $success; Package = $package; Output = $output }
 }
 
-$prefixDirectory = New-Item -ItemType Directory -Force -Path "$WorkingDirectory\$($Package.name)"
+# $prefixDirectory = New-Item -ItemType Directory -Force -Path "$WorkingDirectory\$($Package.name)"
 
-$additionalParameters = @()
-if ($Package.registry) {
-  Write-Host $Package.registry
-  $additionalParameters += @("--registry", $Package.registry)
-}
+# $additionalParameters = @()
+# if ($Package.registry) {
+#   Write-Host $Package.registry
+#   $additionalParameters += @("--registry", $Package.registry)
+# }
 
-Write-Host "npm install $($Package.name) --prefix $prefixDirectory $additionalParameters"
-$installOutput = npm install $Package.name --prefix $prefixDirectory @additionalParameters 2>&1
+Write-Host "docker run -e TARGET_PACKAGE="$($Package.name)" azuresdkimages.azurecr.io/jsrefautocr:latest"
+$installOutput = docker run -e TARGET_PACKAGE="$($Package.name)" azuresdkimages.azurecr.io/jsrefautocr:latest
 if ($LASTEXITCODE -ne 0) {
   LogWarning "Package install failed: $($Package.name)"
   return GetResult $false $package $installOutput

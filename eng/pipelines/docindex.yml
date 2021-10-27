@@ -10,6 +10,9 @@ jobs:
       DocRepoLocation: $(Pipeline.Workspace)/docs
       DocRepoOwner: MicrosoftDocs
       DocRepoName: azure-docs-sdk-node
+      containerRegistry: azuresdkimages.azurecr.io
+      imageName: jsrefautocr
+      tag: latest
     steps:
       # Sync docs repo (this can be sparse)
       - template: /eng/common/pipelines/templates/steps/sparse-checkout.yml
@@ -46,6 +49,13 @@ jobs:
           WorkingDirectory: $(DocRepoLocation)
 
       # Prepare daily docs CI
+      # Pull and build the docker image
+      - pwsh: |
+          docker login $(containerRegistry) -u "$(azuresdkimages-cr-clientid)" -p "$(azuresdkimages-cr-clientsecret)"
+        displayName: Login container registry
+      - pwsh: |
+          docker pull '$(containerRegistry)/$(imageName):$(tag)'
+        displayName: docker pull the image
       - template: /eng/common/pipelines/templates/steps/set-daily-docs-branch-name.yml
         parameters:
           DailyBranchVariableName: DailyDocsBranchName
