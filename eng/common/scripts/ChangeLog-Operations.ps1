@@ -352,3 +352,12 @@ function Remove-EmptySections {
     $ChangeLogEntry.ReleaseContent = $sanitizedReleaseContent.ToArray()
   }
 }
+
+function Get-TrimmedVersion
+{
+  param (
+    [Parameter(Mandatory = $true)]
+    $Version
+  )
+  return $Version.Trim("()")
+}
